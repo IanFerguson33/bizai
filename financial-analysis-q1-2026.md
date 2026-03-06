@@ -18,7 +18,7 @@ The business is experiencing a broken product ladder. While quiz sales have **do
 
 **Peak Comparison (2022):**
 - 2022 revenue: **$1,741,294** (157% higher than current)
-- Quiz-to-Breakthrough conversion: **14.6%** (vs. 1.9% today)
+- Breakthrough to quiz sales ratio: **14.6%** (vs. 1.9% today)
 - High-ticket sales: **71 transactions** (vs. 6 in 2025)
 
 ---
@@ -65,55 +65,53 @@ The business is experiencing a broken product ladder. While quiz sales have **do
 **Key Findings:**
 
 1. **Quiz funnel is working** - Entry-level sales grew 83% (3,300 → 7,318 sales)
-2. **Product ladder is broken** - Mid-tier conversion collapsed from 185% to 27% of quiz buyers
+2. **Product ladder is broken** - Mid-tier to quiz sales ratio collapsed from 185% to 27%
 3. **High-ticket nearly extinct** - Only 5 sales vs. 71 in 2022 (93% decline)
 4. **Premium products growing** - One bright spot (+70%), but small volume (253 sales)
 
 **Product Mix Problem:**
 - 2022: 29.8% of revenue from high-ticket + Breakthrough
 - 2025: 21.7% of revenue from high-ticket + Breakthrough
-- **The business shifted from conversion-focused to volume-focused**
+- **The business shifted from multi-channel mid/high-tier sales to quiz-volume-dependent**
 
 ---
 
-## 3. CUSTOMER UPGRADE RATES
+## 3. MID-TIER TO QUIZ SALES RATIOS
 
-**Note:** Transaction data does not include individual customer IDs, limiting cohort analysis. Analysis based on aggregate conversion patterns.
+**Note:** Transaction data does not include individual customer IDs, limiting cohort analysis. The ratios below compare total mid-tier transactions to total quiz transactions in the same period — they are **not** individual upgrade rates. A ratio above 100% means more mid-tier transactions occurred than quiz transactions, likely due to direct traffic, repeat purchases, and non-quiz entry points driving mid-tier sales independently.
 
-### 2022 (Peak Year) Conversion Funnel:
+### 2022 (Peak Year) Sales Ratios:
 ```
-Quiz Buyers: 3,300
-    ↓ 185.3% → Mid-tier Buyers: 6,114 
-    ↓ 14.6%  → Breakthrough: 482
-    ↓ 2.2%   → High-ticket: 71
-```
-
-### 2025 (Recent) Conversion Funnel:
-```
-Quiz Buyers: 7,318
-    ↓ 26.6% → Mid-tier Buyers: 1,944  ⚠️ 86% DROP
-    ↓ 1.9%  → Breakthrough: 137        ⚠️ 87% DROP
-    ↓ 0.08% → High-ticket: 6           ⚠️ 96% DROP
+Quiz Sales: 3,300
+    ↕ 185.3% ratio → Mid-tier Sales: 6,114 
+    ↕ 14.6% ratio  → Breakthrough: 482
+    ↕ 2.2% ratio   → High-ticket: 71
 ```
 
-### Upgrade Rate Analysis:
+### 2025 (Recent) Sales Ratios:
+```
+Quiz Sales: 7,318
+    ↕ 26.6% ratio → Mid-tier Sales: 1,944  ⚠️ 86% DROP
+    ↕ 1.9% ratio  → Breakthrough: 137        ⚠️ 87% DROP
+    ↕ 0.08% ratio → High-ticket: 6           ⚠️ 96% DROP
+```
+
+### Sales Ratio Analysis:
 
 | Metric | 2022 | 2025 | Change |
 |--------|------|------|--------|
-| Quiz → Mid-tier | 185.3% | 26.6% | **-158.7 pts** |
-| Quiz → Breakthrough | 14.6% | 1.9% | **-12.7 pts** |
-| Quiz → High-ticket | 2.2% | 0.08% | **-2.1 pts** |
+| Mid-tier : Quiz ratio | 185.3% | 26.6% | **-158.7 pts** |
+| Breakthrough : Quiz ratio | 14.6% | 1.9% | **-12.7 pts** |
+| High-ticket : Quiz ratio | 2.2% | 0.08% | **-2.1 pts** |
 
 **Critical Finding:**
-The 2022 mid-tier conversion rate of **185%** (more mid-tier sales than quiz sales) suggests:
-1. Strong upsell sequences immediately after quiz
-2. Effective email nurture to mid-tier offers
-3. OR separate traffic sources buying mid-tier directly
+The 2022 mid-tier to quiz sales ratio of **185%** (more mid-tier sales than quiz sales) indicates that mid-tier products had significant sales volume from sources beyond the quiz funnel — including direct traffic, repeat purchases, affiliate referrals, and non-quiz entry points. This is a ratio of total transactions, not a per-customer upgrade rate.
 
-The 2025 rate of **26.6%** indicates:
+The 2025 ratio of **26.6%** indicates a dramatic decline in mid-tier sales relative to quiz volume:
 - **Broken or disabled upsell funnels**
 - **Inactive email sequences**
 - **Missing product bridge between $17 quiz and $147+ products**
+- **Loss of non-quiz traffic sources that previously drove mid-tier sales**
 
 ---
 
@@ -154,8 +152,8 @@ The 2025 rate of **26.6%** indicates:
 **Estimated Annual Impact: $1,277,540**
 
 **The Problem:**
-- 2022: 185% of quiz buyers purchased mid-tier products ($49-$150)
-- 2025: Only 27% of quiz buyers purchased mid-tier
+- 2022: Mid-tier to quiz sales ratio was 185% (more mid-tier sales than quiz sales, driven by multiple traffic sources)
+- 2025: Ratio dropped to just 27%
 - **Missing 11,614 conversions annually**
 
 **Root Causes (Likely):**
