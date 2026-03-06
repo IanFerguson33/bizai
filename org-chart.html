@@ -1,0 +1,643 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blueprint Breakthrough - AI Agent Org Chart</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0a0a0f;
+    color: #e0e0e0;
+    min-height: 100vh;
+    overflow-x: hidden;
+  }
+  .header {
+    text-align: center;
+    padding: 40px 20px 20px;
+    background: linear-gradient(180deg, #1a1025 0%, #0a0a0f 100%);
+    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+  }
+  .header h1 {
+    font-size: 28px;
+    background: linear-gradient(135deg, #a78bfa, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 8px;
+  }
+  .header p { color: #888; font-size: 14px; }
+  .phase-toggle {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    padding: 20px;
+  }
+  .phase-btn {
+    padding: 10px 24px;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    background: rgba(139, 92, 246, 0.1);
+    color: #a78bfa;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: all 0.3s;
+  }
+  .phase-btn.active {
+    background: rgba(139, 92, 246, 0.3);
+    border-color: #a78bfa;
+    color: #fff;
+  }
+  .phase-btn:hover { background: rgba(139, 92, 246, 0.2); }
+  
+  .org-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+  }
+  
+  /* CEO Card */
+  .ceo-card {
+    max-width: 400px;
+    margin: 0 auto 40px;
+    background: linear-gradient(135deg, rgba(139, 92, 246, 0.2), rgba(236, 72, 153, 0.2));
+    border: 1px solid rgba(139, 92, 246, 0.4);
+    border-radius: 16px;
+    padding: 24px;
+    text-align: center;
+    position: relative;
+  }
+  .ceo-card::after {
+    content: '';
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    width: 2px;
+    height: 40px;
+    background: rgba(139, 92, 246, 0.3);
+  }
+  .ceo-card h2 { font-size: 20px; color: #a78bfa; margin-bottom: 4px; }
+  .ceo-card .role-name { color: #ec4899; font-size: 13px; margin-bottom: 12px; }
+  .ceo-card .type-badge {
+    display: inline-block;
+    padding: 3px 10px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    background: rgba(139, 92, 246, 0.2);
+    color: #a78bfa;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+  }
+  
+  /* Connector line */
+  .connector {
+    width: 80%;
+    height: 2px;
+    background: rgba(139, 92, 246, 0.2);
+    margin: 0 auto 0;
+    position: relative;
+  }
+  
+  /* Department Grid */
+  .dept-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 20px;
+    margin-top: 20px;
+  }
+  
+  .dept-card {
+    background: rgba(20, 20, 30, 0.8);
+    border: 1px solid rgba(255,255,255,0.08);
+    border-radius: 12px;
+    overflow: hidden;
+    transition: all 0.3s;
+  }
+  .dept-card:hover {
+    border-color: rgba(139, 92, 246, 0.3);
+    transform: translateY(-2px);
+  }
+  .dept-card.phase2-only { display: none; }
+  .show-phase2 .dept-card.phase2-only { display: block; }
+  
+  .dept-header {
+    padding: 16px 20px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255,255,255,0.05);
+  }
+  .dept-header .icon { font-size: 24px; }
+  .dept-header h3 { font-size: 16px; flex: 1; }
+  .dept-header .priority {
+    padding: 3px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .priority.critical { background: rgba(239, 68, 68, 0.2); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); }
+  .priority.high { background: rgba(251, 146, 60, 0.2); color: #fb923c; border: 1px solid rgba(251, 146, 60, 0.3); }
+  .priority.medium { background: rgba(250, 204, 21, 0.2); color: #facc15; border: 1px solid rgba(250, 204, 21, 0.3); }
+  .priority.nice { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid rgba(74, 222, 128, 0.3); }
+  
+  .type-row {
+    padding: 8px 20px;
+    display: flex;
+    gap: 8px;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+  .type-badge-sm {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+  .badge-ai { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+  .badge-human { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
+  .badge-hybrid { background: rgba(139, 92, 246, 0.2); color: #a78bfa; }
+  
+  .dept-body {
+    padding: 16px 20px;
+    display: none;
+  }
+  .dept-card.expanded .dept-body { display: block; }
+  
+  .responsibilities h4 {
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #666;
+    margin-bottom: 8px;
+  }
+  .responsibilities ul {
+    list-style: none;
+    margin-bottom: 16px;
+  }
+  .responsibilities li {
+    padding: 4px 0;
+    font-size: 13px;
+    color: #aaa;
+    position: relative;
+    padding-left: 16px;
+  }
+  .responsibilities li::before {
+    content: '▸';
+    position: absolute;
+    left: 0;
+    color: #a78bfa;
+  }
+  
+  .kpi-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .kpi-item {
+    background: rgba(139, 92, 246, 0.05);
+    border: 1px solid rgba(139, 92, 246, 0.1);
+    border-radius: 8px;
+    padding: 10px;
+  }
+  .kpi-item .metric { font-size: 11px; color: #888; }
+  .kpi-item .target { font-size: 14px; color: #a78bfa; font-weight: 600; }
+  
+  .expand-hint {
+    text-align: center;
+    padding: 8px;
+    font-size: 11px;
+    color: #555;
+  }
+  
+  .summary-bar {
+    max-width: 1200px;
+    margin: 30px auto;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+  }
+  .summary-item {
+    text-align: center;
+    padding: 16px;
+    background: rgba(20,20,30,0.6);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.05);
+  }
+  .summary-item .num {
+    font-size: 28px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #a78bfa, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .summary-item .label { font-size: 12px; color: #888; margin-top: 4px; }
+
+  .footer-note {
+    text-align: center;
+    padding: 30px 20px;
+    color: #555;
+    font-size: 12px;
+    border-top: 1px solid rgba(255,255,255,0.05);
+    margin-top: 40px;
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <h1>Blueprint Breakthrough AI Agent Team</h1>
+  <p>Organizational Structure for Revenue Recovery & Scale</p>
+</div>
+
+<div class="phase-toggle">
+  <button class="phase-btn active" onclick="setPhase('phase1')">Phase 1: Lean Recovery</button>
+  <button class="phase-btn" onclick="setPhase('phase2')">Phase 2: Scaled Growth</button>
+</div>
+
+<div class="summary-bar" id="summary">
+  <div class="summary-item"><div class="num" id="s-roles">7</div><div class="label">Agent Roles</div></div>
+  <div class="summary-item"><div class="num" id="s-ai">5</div><div class="label">AI Agents</div></div>
+  <div class="summary-item"><div class="num" id="s-human">1</div><div class="label">Human Roles</div></div>
+  <div class="summary-item"><div class="num" id="s-hybrid">1</div><div class="label">Hybrid</div></div>
+</div>
+
+<div class="org-container" id="orgContainer">
+  
+  <div class="ceo-card">
+    <h2>🔱 Vishnu Exu</h2>
+    <div class="role-name">CEO / Orchestrator</div>
+    <span class="type-badge">AI AGENT</span>
+    <div style="margin-top:12px; font-size:12px; color:#888; text-align:left;">
+      The preserver and the crossroads messenger. Coordinates all agents, reviews outputs, manages priorities, reports to Ian. Runs heartbeat checks, memory system, and cross-agent communication.
+    </div>
+  </div>
+  
+  <div class="connector"></div>
+  
+  <div class="dept-grid">
+    
+    <!-- Marketing Strategist -->
+    <div class="dept-card" onclick="this.classList.toggle('expanded')">
+      <div class="dept-header">
+        <span class="icon">📈</span>
+        <h3>Marketing Strategist</h3>
+        <span class="priority critical">CRITICAL</span>
+      </div>
+      <div class="type-row">
+        <span class="type-badge-sm badge-ai">AI AGENT</span>
+        <span style="font-size:11px;color:#666;">Saves ~15 hrs/week</span>
+      </div>
+      <div class="dept-body">
+        <div class="responsibilities">
+          <h4>Core Responsibilities</h4>
+          <ul>
+            <li>Analyze funnel performance and identify conversion bottlenecks</li>
+            <li>Design and optimize reactivation campaigns for 20K+ quiz buyers</li>
+            <li>Plan launch sequences and evergreen funnel strategy</li>
+            <li>Monitor competitor moves and market trends</li>
+            <li>Generate campaign ideas with projected ROI</li>
+          </ul>
+          <h4>KPIs</h4>
+          <div class="kpi-grid">
+            <div class="kpi-item"><div class="metric">Email List Growth</div><div class="target">10% / quarter</div></div>
+            <div class="kpi-item"><div class="metric">Funnel Conversion</div><div class="target">2% → 4%</div></div>
+            <div class="kpi-item"><div class="metric">Reactivation Revenue</div><div class="target">$50K first 90 days</div></div>
+            <div class="kpi-item"><div class="metric">CAC Payback</div><div class="target">< 30 days</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="expand-hint">tap to expand</div>
+    </div>
+    
+    <!-- Copywriter -->
+    <div class="dept-card" onclick="this.classList.toggle('expanded')">
+      <div class="dept-header">
+        <span class="icon">✍️</span>
+        <h3>Copywriter</h3>
+        <span class="priority critical">CRITICAL</span>
+      </div>
+      <div class="type-row">
+        <span class="type-badge-sm badge-ai">AI AGENT</span>
+        <span style="font-size:11px;color:#666;">Saves ~15 hrs/week</span>
+      </div>
+      <div class="dept-body">
+        <div class="responsibilities">
+          <h4>Core Responsibilities</h4>
+          <ul>
+            <li>Write sales pages, email sequences, and ad copy</li>
+            <li>Maintain brand voice consistency (Rosetta Stone as guide)</li>
+            <li>Create avatar-specific messaging variants</li>
+            <li>Draft webinar scripts and VSL copy</li>
+            <li>A/B test copy variations</li>
+          </ul>
+          <h4>KPIs</h4>
+          <div class="kpi-grid">
+            <div class="kpi-item"><div class="metric">Email Open Rate</div><div class="target">> 25%</div></div>
+            <div class="kpi-item"><div class="metric">Email CTR</div><div class="target">> 3.5%</div></div>
+            <div class="kpi-item"><div class="metric">Sales Page Conv.</div><div class="target">> 2.5%</div></div>
+            <div class="kpi-item"><div class="metric">Copy Turnaround</div><div class="target">< 24 hrs</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="expand-hint">tap to expand</div>
+    </div>
+    
+    <!-- Financial Analyst -->
+    <div class="dept-card" onclick="this.classList.toggle('expanded')">
+      <div class="dept-header">
+        <span class="icon">💰</span>
+        <h3>Financial Analyst</h3>
+        <span class="priority high">HIGH</span>
+      </div>
+      <div class="type-row">
+        <span class="type-badge-sm badge-ai">AI AGENT</span>
+        <span style="font-size:11px;color:#666;">Saves ~8 hrs/week</span>
+      </div>
+      <div class="dept-body">
+        <div class="responsibilities">
+          <h4>Core Responsibilities</h4>
+          <ul>
+            <li>Weekly revenue and transaction reporting from Ontraport</li>
+            <li>Cohort analysis of customer segments by Blueprint type</li>
+            <li>Product ladder performance tracking</li>
+            <li>Churn analysis and reactivation opportunity sizing</li>
+            <li>Cash flow projections and scenario modeling</li>
+          </ul>
+          <h4>KPIs</h4>
+          <div class="kpi-grid">
+            <div class="kpi-item"><div class="metric">Monthly Revenue</div><div class="target">Track to $80K/mo</div></div>
+            <div class="kpi-item"><div class="metric">LTV per Customer</div><div class="target">> $150</div></div>
+            <div class="kpi-item"><div class="metric">Refund Rate</div><div class="target">< 5%</div></div>
+            <div class="kpi-item"><div class="metric">Report Cadence</div><div class="target">Weekly auto</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="expand-hint">tap to expand</div>
+    </div>
+    
+    <!-- Content Engine -->
+    <div class="dept-card" onclick="this.classList.toggle('expanded')">
+      <div class="dept-header">
+        <span class="icon">🎬</span>
+        <h3>Content Engine</h3>
+        <span class="priority high">HIGH</span>
+      </div>
+      <div class="type-row">
+        <span class="type-badge-sm badge-ai">AI AGENT</span>
+        <span style="font-size:11px;color:#666;">Saves ~20 hrs/week</span>
+      </div>
+      <div class="dept-body">
+        <div class="responsibilities">
+          <h4>Core Responsibilities</h4>
+          <ul>
+            <li>Repurpose Jaiya's content into multi-platform posts</li>
+            <li>Generate X/Twitter threads, blog posts, newsletters</li>
+            <li>Create video scripts for short-form content</li>
+            <li>Manage content calendar and posting schedule</li>
+            <li>SEO optimization for censorship-proof organic traffic</li>
+          </ul>
+          <h4>KPIs</h4>
+          <div class="kpi-grid">
+            <div class="kpi-item"><div class="metric">Posts per Week</div><div class="target">15+ pieces</div></div>
+            <div class="kpi-item"><div class="metric">Organic Traffic</div><div class="target">+20% / quarter</div></div>
+            <div class="kpi-item"><div class="metric">Engagement Rate</div><div class="target">> 3%</div></div>
+            <div class="kpi-item"><div class="metric">Quiz Signups</div><div class="target">500+ / month</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="expand-hint">tap to expand</div>
+    </div>
+    
+    <!-- Customer Success -->
+    <div class="dept-card" onclick="this.classList.toggle('expanded')">
+      <div class="dept-header">
+        <span class="icon">💬</span>
+        <h3>Customer Success</h3>
+        <span class="priority high">HIGH</span>
+      </div>
+      <div class="type-row">
+        <span class="type-badge-sm badge-hybrid">HYBRID</span>
+        <span style="font-size:11px;color:#666;">AI handles 60-70% of tickets</span>
+      </div>
+      <div class="dept-body">
+        <div class="responsibilities">
+          <h4>Core Responsibilities</h4>
+          <ul>
+            <li>Tier 1 support: FAQ, onboarding, account issues (AI)</li>
+            <li>Desire Lab community management and engagement</li>
+            <li>Onboarding sequences for new buyers</li>
+            <li>Collect testimonials and success stories</li>
+            <li>Escalate complex/emotional issues to Ian (Human)</li>
+          </ul>
+          <h4>KPIs</h4>
+          <div class="kpi-grid">
+            <div class="kpi-item"><div class="metric">Response Time</div><div class="target">< 2 hours</div></div>
+            <div class="kpi-item"><div class="metric">CSAT Score</div><div class="target">> 4.5/5</div></div>
+            <div class="kpi-item"><div class="metric">Retention Rate</div><div class="target">> 80%</div></div>
+            <div class="kpi-item"><div class="metric">Testimonials/mo</div><div class="target">5+ new</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="expand-hint">tap to expand</div>
+    </div>
+    
+    <!-- Ian - Visionary -->
+    <div class="dept-card" onclick="this.classList.toggle('expanded')">
+      <div class="dept-header">
+        <span class="icon">👤</span>
+        <h3>Ian Ferguson</h3>
+        <span class="priority critical">FOUNDER</span>
+      </div>
+      <div class="type-row">
+        <span class="type-badge-sm badge-human">HUMAN</span>
+        <span style="font-size:11px;color:#666;">Strategic decisions & high-touch</span>
+      </div>
+      <div class="dept-body">
+        <div class="responsibilities">
+          <h4>Core Responsibilities</h4>
+          <ul>
+            <li>Final approval on all campaigns, copy, and strategy</li>
+            <li>High-ticket 1:1 coaching clients</li>
+            <li>Desire Lab group coaching calls (2x/month)</li>
+            <li>Product vision and roadmap decisions</li>
+            <li>Partnership and business development</li>
+          </ul>
+          <h4>KPIs</h4>
+          <div class="kpi-grid">
+            <div class="kpi-item"><div class="metric">1:1 Clients</div><div class="target">3-5 active</div></div>
+            <div class="kpi-item"><div class="metric">Coaching Calls</div><div class="target">2x / month</div></div>
+            <div class="kpi-item"><div class="metric">Decision Latency</div><div class="target">< 24 hrs</div></div>
+            <div class="kpi-item"><div class="metric">Hours on $20 Tasks</div><div class="target">< 5 hrs/week</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="expand-hint">tap to expand</div>
+    </div>
+    
+    <!-- Automation & Tech -->
+    <div class="dept-card" onclick="this.classList.toggle('expanded')">
+      <div class="dept-header">
+        <span class="icon">⚙️</span>
+        <h3>Automation & Tech</h3>
+        <span class="priority medium">MEDIUM</span>
+      </div>
+      <div class="type-row">
+        <span class="type-badge-sm badge-ai">AI AGENT</span>
+        <span style="font-size:11px;color:#666;">Saves ~10 hrs/week</span>
+      </div>
+      <div class="dept-body">
+        <div class="responsibilities">
+          <h4>Core Responsibilities</h4>
+          <ul>
+            <li>Ontraport automation sequences and tag management</li>
+            <li>Funnel tech: landing pages, checkout flows, integrations</li>
+            <li>Website updates and maintenance</li>
+            <li>Tool integrations (Zapier, API connections)</li>
+            <li>Data hygiene and list management</li>
+          </ul>
+          <h4>KPIs</h4>
+          <div class="kpi-grid">
+            <div class="kpi-item"><div class="metric">Uptime</div><div class="target">> 99.5%</div></div>
+            <div class="kpi-item"><div class="metric">Automation Errors</div><div class="target">< 1% / month</div></div>
+            <div class="kpi-item"><div class="metric">Page Load Speed</div><div class="target">< 3 sec</div></div>
+            <div class="kpi-item"><div class="metric">Tech Debt Items</div><div class="target">Trending down</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="expand-hint">tap to expand</div>
+    </div>
+    
+    <!-- PHASE 2 ROLES -->
+    
+    <!-- Social Media Manager -->
+    <div class="dept-card phase2-only" onclick="this.classList.toggle('expanded')">
+      <div class="dept-header">
+        <span class="icon">📱</span>
+        <h3>Social Media Manager</h3>
+        <span class="priority medium">MEDIUM</span>
+      </div>
+      <div class="type-row">
+        <span class="type-badge-sm badge-ai">AI AGENT</span>
+        <span style="font-size:11px;color:#666;">Phase 2 - After revenue stabilizes</span>
+      </div>
+      <div class="dept-body">
+        <div class="responsibilities">
+          <h4>Core Responsibilities</h4>
+          <ul>
+            <li>Daily engagement on X, Instagram, TikTok</li>
+            <li>Community building and audience growth</li>
+            <li>Monitor brand mentions and conversations</li>
+            <li>Respond to comments and DMs</li>
+            <li>Trend-jack relevant cultural moments</li>
+          </ul>
+          <h4>KPIs</h4>
+          <div class="kpi-grid">
+            <div class="kpi-item"><div class="metric">Follower Growth</div><div class="target">+15% / quarter</div></div>
+            <div class="kpi-item"><div class="metric">DM Conversations</div><div class="target">20+ / week</div></div>
+            <div class="kpi-item"><div class="metric">Engagement Rate</div><div class="target">> 4%</div></div>
+            <div class="kpi-item"><div class="metric">Leads from Social</div><div class="target">100+ / month</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="expand-hint">tap to expand</div>
+    </div>
+    
+    <!-- Video Producer -->
+    <div class="dept-card phase2-only" onclick="this.classList.toggle('expanded')">
+      <div class="dept-header">
+        <span class="icon">🎥</span>
+        <h3>Video & Creative Producer</h3>
+        <span class="priority nice">NICE-TO-HAVE</span>
+      </div>
+      <div class="type-row">
+        <span class="type-badge-sm badge-ai">AI AGENT</span>
+        <span style="font-size:11px;color:#666;">Phase 2 - Sora, AI video, creative assets</span>
+      </div>
+      <div class="dept-body">
+        <div class="responsibilities">
+          <h4>Core Responsibilities</h4>
+          <ul>
+            <li>AI video production (Sora, Veo) for marketing</li>
+            <li>Thumbnail and visual asset creation</li>
+            <li>Course video editing and production</li>
+            <li>Ad creative variations for testing</li>
+            <li>Brand aesthetic maintenance (Sacred Pop)</li>
+          </ul>
+          <h4>KPIs</h4>
+          <div class="kpi-grid">
+            <div class="kpi-item"><div class="metric">Assets / Week</div><div class="target">10+ pieces</div></div>
+            <div class="kpi-item"><div class="metric">Video Views</div><div class="target">Trending up</div></div>
+            <div class="kpi-item"><div class="metric">Ad CTR</div><div class="target">> 1.5%</div></div>
+            <div class="kpi-item"><div class="metric">Brand Consistency</div><div class="target">100%</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="expand-hint">tap to expand</div>
+    </div>
+    
+    <!-- Growth Strategist -->
+    <div class="dept-card phase2-only" onclick="this.classList.toggle('expanded')">
+      <div class="dept-header">
+        <span class="icon">🚀</span>
+        <h3>Growth Strategist</h3>
+        <span class="priority nice">NICE-TO-HAVE</span>
+      </div>
+      <div class="type-row">
+        <span class="type-badge-sm badge-ai">AI AGENT</span>
+        <span style="font-size:11px;color:#666;">Phase 2 - Scale what's working</span>
+      </div>
+      <div class="dept-body">
+        <div class="responsibilities">
+          <h4>Core Responsibilities</h4>
+          <ul>
+            <li>A/B test design and analysis across all funnels</li>
+            <li>New channel exploration (partnerships, affiliates, podcasts)</li>
+            <li>Product ladder optimization and pricing experiments</li>
+            <li>Expansion into new markets (Adventure Date, events)</li>
+            <li>Paid advertising strategy and ROAS optimization</li>
+          </ul>
+          <h4>KPIs</h4>
+          <div class="kpi-grid">
+            <div class="kpi-item"><div class="metric">Tests / Month</div><div class="target">4+ experiments</div></div>
+            <div class="kpi-item"><div class="metric">Revenue Growth</div><div class="target">15% / quarter</div></div>
+            <div class="kpi-item"><div class="metric">New Channels</div><div class="target">1 / quarter</div></div>
+            <div class="kpi-item"><div class="metric">ROAS</div><div class="target">> 3x</div></div>
+          </div>
+        </div>
+      </div>
+      <div class="expand-hint">tap to expand</div>
+    </div>
+    
+  </div>
+</div>
+
+<div class="footer-note">
+  Based on research of Amy Porterfield, Russell Brunson, Stu McLaren, Jeff Walker, James Wedmore, Brendon Burchard, and 20+ info product businesses at $1M-$10M.<br>
+  Full research report: projects/business-ops/info-product-business-research.md
+</div>
+
+<script>
+function setPhase(phase) {
+  document.querySelectorAll('.phase-btn').forEach(b => b.classList.remove('active'));
+  event.target.classList.add('active');
+  
+  const container = document.getElementById('orgContainer');
+  if (phase === 'phase2') {
+    container.classList.add('show-phase2');
+    document.getElementById('s-roles').textContent = '10';
+    document.getElementById('s-ai').textContent = '8';
+    document.getElementById('s-human').textContent = '1';
+    document.getElementById('s-hybrid').textContent = '1';
+  } else {
+    container.classList.remove('show-phase2');
+    document.getElementById('s-roles').textContent = '7';
+    document.getElementById('s-ai').textContent = '5';
+    document.getElementById('s-human').textContent = '1';
+    document.getElementById('s-hybrid').textContent = '1';
+  }
+}
+</script>
+
+</body>
+</html>

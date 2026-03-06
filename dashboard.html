@@ -1,0 +1,618 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Blueprint Breakthrough - Command Center</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body { 
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: #0a0a0f;
+    color: #e0e0e0;
+    min-height: 100vh;
+    line-height: 1.6;
+  }
+  
+  .hero {
+    background: linear-gradient(135deg, #1a1025 0%, #0f0a1a 50%, #0a0a0f 100%);
+    border-bottom: 1px solid rgba(139, 92, 246, 0.2);
+    padding: 40px 24px 32px;
+    text-align: center;
+  }
+  .hero h1 {
+    font-size: 26px;
+    background: linear-gradient(135deg, #a78bfa, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 4px;
+  }
+  .hero .subtitle { color: #888; font-size: 13px; margin-bottom: 24px; }
+  
+  /* CEO Brief */
+  .ceo-brief {
+    max-width: 900px;
+    margin: 0 auto;
+    text-align: left;
+    background: rgba(139, 92, 246, 0.06);
+    border: 1px solid rgba(139, 92, 246, 0.15);
+    border-radius: 16px;
+    padding: 28px;
+    position: relative;
+  }
+  .ceo-brief .avatar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 16px;
+  }
+  .ceo-brief .avatar .icon { font-size: 32px; }
+  .ceo-brief .avatar .name { font-size: 18px; font-weight: 700; color: #a78bfa; }
+  .ceo-brief .avatar .role { font-size: 12px; color: #888; }
+  .ceo-brief p { font-size: 14px; color: #bbb; margin-bottom: 12px; }
+  .ceo-brief strong { color: #e0e0e0; }
+  .ceo-brief .highlight {
+    background: rgba(236, 72, 153, 0.1);
+    border-left: 3px solid #ec4899;
+    padding: 12px 16px;
+    border-radius: 0 8px 8px 0;
+    margin: 16px 0;
+    font-size: 14px;
+  }
+  .ceo-brief .highlight em { color: #f472b6; font-style: normal; font-weight: 600; }
+
+  .theme-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 16px;
+  }
+  .theme-pill {
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid rgba(139, 92, 246, 0.3);
+    background: rgba(139, 92, 246, 0.1);
+    color: #c4b5fd;
+  }
+
+  /* Stats Bar */
+  .stats-bar {
+    max-width: 900px;
+    margin: 24px auto;
+    padding: 0 24px;
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 12px;
+  }
+  .stat-card {
+    text-align: center;
+    padding: 16px 8px;
+    background: rgba(20,20,30,0.8);
+    border-radius: 12px;
+    border: 1px solid rgba(255,255,255,0.06);
+  }
+  .stat-card .num {
+    font-size: 22px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #a78bfa, #ec4899);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .stat-card .label { font-size: 11px; color: #777; margin-top: 2px; }
+
+  /* Agent Sections */
+  .agents-container {
+    max-width: 900px;
+    margin: 24px auto;
+    padding: 0 24px;
+  }
+  .section-title {
+    font-size: 16px;
+    color: #888;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 16px;
+    padding-left: 4px;
+  }
+
+  .agent-section {
+    background: rgba(20, 20, 30, 0.8);
+    border: 1px solid rgba(255,255,255,0.06);
+    border-radius: 14px;
+    margin-bottom: 16px;
+    overflow: hidden;
+    transition: border-color 0.3s;
+  }
+  .agent-section:hover { border-color: rgba(139, 92, 246, 0.2); }
+
+  .agent-header {
+    padding: 18px 20px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    cursor: pointer;
+    user-select: none;
+  }
+  .agent-header .icon { font-size: 28px; flex-shrink: 0; }
+  .agent-header .info { flex: 1; }
+  .agent-header .info h3 { font-size: 16px; color: #e0e0e0; }
+  .agent-header .info .status { font-size: 12px; color: #4ade80; }
+  .agent-header .info .status.pending { color: #facc15; }
+  .agent-header .chevron {
+    font-size: 18px;
+    color: #555;
+    transition: transform 0.3s;
+  }
+  .agent-section.open .agent-header .chevron { transform: rotate(180deg); }
+
+  .agent-body {
+    display: none;
+    border-top: 1px solid rgba(255,255,255,0.05);
+  }
+  .agent-section.open .agent-body { display: block; }
+
+  /* Summary Panel */
+  .summary-panel {
+    padding: 20px;
+    background: rgba(139, 92, 246, 0.04);
+  }
+  .summary-panel h4 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #a78bfa;
+    margin-bottom: 12px;
+  }
+  .summary-panel p {
+    font-size: 13px;
+    color: #aaa;
+    margin-bottom: 8px;
+  }
+
+  /* Key Numbers */
+  .key-numbers {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 10px;
+    padding: 16px 20px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .key-num {
+    background: rgba(0,0,0,0.3);
+    border-radius: 10px;
+    padding: 12px;
+    text-align: center;
+  }
+  .key-num .value { font-size: 18px; font-weight: 700; color: #a78bfa; }
+  .key-num .desc { font-size: 11px; color: #777; margin-top: 2px; }
+
+  /* Action Steps */
+  .action-steps {
+    padding: 16px 20px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .action-steps h4 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #ec4899;
+    margin-bottom: 12px;
+  }
+  .step {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-size: 13px;
+  }
+  .step:last-child { border-bottom: none; }
+  .step .num {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: rgba(236, 72, 153, 0.15);
+    color: #f472b6;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+  .step .text { color: #bbb; }
+  .step .text strong { color: #e0e0e0; }
+
+  /* Assets */
+  .assets {
+    padding: 16px 20px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .assets h4 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #facc15;
+    margin-bottom: 12px;
+  }
+  .asset-list { list-style: none; }
+  .asset-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+    font-size: 13px;
+  }
+  .asset-list li:last-child { border-bottom: none; }
+  .asset-list a {
+    color: #818cf8;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .asset-list a:hover { color: #a78bfa; }
+  .asset-list .file-icon { font-size: 16px; }
+  .asset-list .file-desc { color: #666; font-size: 11px; margin-left: auto; }
+
+  /* Dependencies */
+  .deps {
+    padding: 16px 20px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+  }
+  .deps h4 {
+    font-size: 13px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #fb923c;
+    margin-bottom: 12px;
+  }
+  .dep-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 0;
+    font-size: 13px;
+    color: #aaa;
+  }
+  .dep-badge {
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 10px;
+    font-weight: 600;
+  }
+  .dep-badge.needs-ian { background: rgba(236, 72, 153, 0.2); color: #f472b6; }
+  .dep-badge.needs-agent { background: rgba(99, 102, 241, 0.2); color: #818cf8; }
+  .dep-badge.ready { background: rgba(74, 222, 128, 0.2); color: #4ade80; }
+
+  .footer {
+    text-align: center;
+    padding: 32px 24px;
+    color: #444;
+    font-size: 11px;
+    border-top: 1px solid rgba(255,255,255,0.04);
+    margin-top: 32px;
+  }
+
+  @media (max-width: 640px) {
+    .stats-bar { grid-template-columns: repeat(2, 1fr); }
+    .key-numbers { grid-template-columns: repeat(2, 1fr); }
+    .hero { padding: 24px 16px 20px; }
+    .ceo-brief { padding: 20px; }
+    .agents-container { padding: 0 16px; }
+  }
+</style>
+</head>
+<body>
+
+<div class="hero">
+  <h1>Blueprint Breakthrough Command Center</h1>
+  <div class="subtitle">Revenue Recovery Plan - March 2026</div>
+
+  <div class="ceo-brief">
+    <div class="avatar">
+      <span class="icon">🔱</span>
+      <div>
+        <div class="name">Vishnu Exu - CEO Brief</div>
+        <div class="role">Integrated Strategy Overview</div>
+      </div>
+    </div>
+
+    <p>Ian, here's the situation and the plan. Your quiz funnel is actually <strong>working better than ever</strong> -- quiz sales are up 83% since 2022. The problem isn't traffic. It's what happens after someone takes the quiz.</p>
+
+    <div class="highlight">
+      The product ladder is broken. In 2022, <em>185% of quiz buyers</em> upgraded to mid-tier products. Today that number is <em>27%</em>. That single metric explains the entire revenue decline. Fix the ladder, fix the business.
+    </div>
+
+    <p>The plan has three synchronized moves, designed to work together:</p>
+
+    <p><strong>Move 1: Reactivate the 20K.</strong> You have 20,891 quiz buyers sitting in Ontraport who paid $17 and never came back. The Marketing Strategist has segmented them into 4 tiers by engagement level and designed a 3-email sequence with a $47 Pleasure Playbook offer. Conservative projection: $32K. Optimistic: $98K. This is the fastest path to revenue.</p>
+
+    <p><strong>Move 2: Rebuild the content engine.</strong> Censorship-safe content on X driving quiz signups. 22 posts ready for the first 2 weeks. Every piece targets a specific Blueprint type and funnels to the quiz. This refills the top while we fix the middle.</p>
+
+    <p><strong>Move 3: Fix the funnel permanently.</strong> The Financial Analyst identified that restoring mid-tier conversion rates alone is worth $1.3M annually. This means rebuilding the post-quiz email sequences, optimizing the Pleasure Playbook sales page, and creating a clear path from $17 to $69 to $390.</p>
+
+    <div class="highlight">
+      <em>Why this will work:</em> We're not guessing. We have 60,178 transactions of data showing exactly where the funnel broke and exactly what conversion rates looked like when it was working. We're reverse-engineering 2022's success with 2026's tools. The audience is already in your CRM. We just need to talk to them again.
+    </div>
+
+    <div class="theme-pills">
+      <span class="theme-pill">Reactivation First</span>
+      <span class="theme-pill">Fix the Ladder</span>
+      <span class="theme-pill">Content Engine</span>
+      <span class="theme-pill">Data-Driven</span>
+      <span class="theme-pill">No New Spend</span>
+      <span class="theme-pill">Ship Fast, Measure, Iterate</span>
+    </div>
+  </div>
+</div>
+
+<div class="stats-bar">
+  <div class="stat-card"><div class="num">20,891</div><div class="label">Quiz Buyers to Reactivate</div></div>
+  <div class="stat-card"><div class="num">$32K-$98K</div><div class="label">Projected Campaign Revenue</div></div>
+  <div class="stat-card"><div class="num">86%</div><div class="label">Conversion Rate Decline</div></div>
+  <div class="stat-card"><div class="num">$1.3M</div><div class="label">Annual Recovery Potential</div></div>
+</div>
+
+<div class="agents-container">
+  <div class="section-title">Agent Deliverables</div>
+
+  <!-- MARKETING STRATEGIST -->
+  <div class="agent-section" onclick="this.classList.toggle('open')">
+    <div class="agent-header">
+      <span class="icon">📈</span>
+      <div class="info">
+        <h3>Marketing Strategist</h3>
+        <div class="status">✓ Deliverable Ready</div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="agent-body">
+      <div class="summary-panel">
+        <h4>Proposal Summary</h4>
+        <p><strong>30-Day Reactivation Campaign</strong> targeting 20,891 dormant quiz buyers in 4 waves, segmented by engagement level. 3-email sequence per segment with rolling 7-day urgency windows.</p>
+        <p>Primary offer: Pleasure Playbook at $47 (32% off $69) with Blueprint type-specific bonus guides. Alternative: Breakthrough at $297 for high-intent segments.</p>
+      </div>
+      <div class="key-numbers">
+        <div class="key-num"><div class="value">4</div><div class="desc">Audience Segments</div></div>
+        <div class="key-num"><div class="value">3</div><div class="desc">Emails per Wave</div></div>
+        <div class="key-num"><div class="value">$47</div><div class="desc">Campaign Price</div></div>
+        <div class="key-num"><div class="value">30 days</div><div class="desc">Full Execution</div></div>
+      </div>
+      <div class="action-steps">
+        <h4>Action Steps</h4>
+        <div class="step"><span class="num">1</span><div class="text"><strong>Segment the 20K list</strong> in Ontraport by purchase date + engagement (Financial Analyst pulls data)</div></div>
+        <div class="step"><span class="num">2</span><div class="text"><strong>Write 3-email sequence</strong> -- Awakening, Bridge, Catalyst (Copywriter creates)</div></div>
+        <div class="step"><span class="num">3</span><div class="text"><strong>Create 5 type-specific bonus PDFs</strong> -- one per Blueprint type (Copywriter creates)</div></div>
+        <div class="step"><span class="num">4</span><div class="text"><strong>Update Pleasure Playbook sales page</strong> with campaign pricing + countdown (Automation agent)</div></div>
+        <div class="step"><span class="num">5</span><div class="text"><strong>Ian approves</strong> final emails + offer structure</div></div>
+        <div class="step"><span class="num">6</span><div class="text"><strong>Launch Segment A</strong> (4,000 recent + engaged) -- Week 1</div></div>
+        <div class="step"><span class="num">7</span><div class="text"><strong>Analyze results</strong>, optimize, launch Segments B-D in weeks 2-4</div></div>
+      </div>
+      <div class="assets">
+        <h4>Documents & Assets</h4>
+        <ul class="asset-list">
+          <li><a href="reactivation-campaign-plan.md"><span class="file-icon">📄</span> Reactivation Campaign Plan <span class="file-desc">Full strategy doc</span></a></li>
+          <li><a href="org-chart.html"><span class="file-icon">📊</span> Team Org Chart <span class="file-desc">Interactive roles + KPIs</span></a></li>
+          <li><a href="info-product-business-research.md"><span class="file-icon">📚</span> Business Model Research <span class="file-desc">2,245 lines of analysis</span></a></li>
+        </ul>
+      </div>
+      <div class="deps">
+        <h4>Dependencies</h4>
+        <div class="dep-item"><span class="dep-badge needs-ian">NEEDS IAN</span> Approve $47 offer price + bonus strategy</div>
+        <div class="dep-item"><span class="dep-badge needs-agent">COPYWRITER</span> 3-email sequence + 5 bonus PDFs</div>
+        <div class="dep-item"><span class="dep-badge needs-agent">FINANCIAL</span> Segmentation data pull from Ontraport</div>
+        <div class="dep-item"><span class="dep-badge needs-agent">AUTOMATION</span> Sales page update + countdown timer</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- FINANCIAL ANALYST -->
+  <div class="agent-section" onclick="this.classList.toggle('open')">
+    <div class="agent-header">
+      <span class="icon">💰</span>
+      <div class="info">
+        <h3>Financial Analyst</h3>
+        <div class="status">✓ Deliverable Ready</div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="agent-body">
+      <div class="summary-panel">
+        <h4>Proposal Summary</h4>
+        <p><strong>Q1 2026 Financial Analysis</strong> -- Complete revenue breakdown from 60,178 transactions. Identified the core problem: quiz-to-upgrade conversion collapsed 86% while quiz sales actually grew 83%.</p>
+        <p>Three recovery opportunities sized at $1.3M (mid-tier funnel), $1.0M (Breakthrough pipeline), and $248K (high-ticket). Conservative total: $1.5M. Aggressive: $3.1M.</p>
+      </div>
+      <div class="key-numbers">
+        <div class="key-num"><div class="value">$42.9K</div><div class="desc">Avg Monthly Revenue</div></div>
+        <div class="key-num"><div class="value">+83%</div><div class="desc">Quiz Sales Growth</div></div>
+        <div class="key-num"><div class="value">-86%</div><div class="desc">Upgrade Rate Drop</div></div>
+        <div class="key-num"><div class="value">$1.5M+</div><div class="desc">Recovery Opportunity</div></div>
+      </div>
+      <div class="action-steps">
+        <h4>Top Recovery Actions</h4>
+        <div class="step"><span class="num">1</span><div class="text"><strong>Restore mid-tier funnel</strong> -- Fix post-quiz upsell sequences. Worth $1.3M/yr if restored to 2022 rates</div></div>
+        <div class="step"><span class="num">2</span><div class="text"><strong>Rebuild Breakthrough pipeline</strong> -- Quarterly challenges + VSL funnel. Worth $1.0M/yr</div></div>
+        <div class="step"><span class="num">3</span><div class="text"><strong>Resurrect high-ticket offers</strong> -- $5K-$15K programs. Worth $248K/yr</div></div>
+        <div class="step"><span class="num">4</span><div class="text"><strong>Set up weekly revenue dashboard</strong> -- Automated tracking against recovery targets</div></div>
+      </div>
+      <div class="assets">
+        <h4>Documents & Assets</h4>
+        <ul class="asset-list">
+          <li><a href="financial-analysis-q1-2026.md"><span class="file-icon">📄</span> Q1 2026 Financial Analysis <span class="file-desc">Revenue trends, cohorts, opportunities</span></a></li>
+          <li><a href="../ontraport-api/product-catalog.md"><span class="file-icon">📋</span> Product Catalog <span class="file-desc">All products + pricing</span></a></li>
+        </ul>
+      </div>
+      <div class="deps">
+        <h4>Dependencies</h4>
+        <div class="dep-item"><span class="dep-badge needs-ian">NEEDS IAN</span> Confirm which Ontraport sequences are active vs. disabled</div>
+        <div class="dep-item"><span class="dep-badge needs-agent">AUTOMATION</span> Audit current email automations in Ontraport</div>
+        <div class="dep-item"><span class="dep-badge ready">READY</span> Transaction data fully loaded (60K records)</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT ENGINE -->
+  <div class="agent-section" onclick="this.classList.toggle('open')">
+    <div class="agent-header">
+      <span class="icon">🎬</span>
+      <div class="info">
+        <h3>Content Engine</h3>
+        <div class="status">✓ Deliverable Ready</div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="agent-body">
+      <div class="summary-panel">
+        <h4>Proposal Summary</h4>
+        <p><strong>2-Week X Content Calendar</strong> -- 22 posts targeting all 5 Blueprint types, designed to drive quiz signups through curiosity and pattern-interruption. Mix of single tweets, threads, polls, and engagement questions.</p>
+        <p>All content is censorship-safe using connection/intimacy framing. Each piece naturally leads to the Blueprint quiz CTA.</p>
+      </div>
+      <div class="key-numbers">
+        <div class="key-num"><div class="value">22</div><div class="desc">Posts Created</div></div>
+        <div class="key-num"><div class="value">5</div><div class="desc">Blueprint Types Covered</div></div>
+        <div class="key-num"><div class="value">11</div><div class="desc">Quiz CTAs</div></div>
+        <div class="key-num"><div class="value">4</div><div class="desc">Content Formats</div></div>
+      </div>
+      <div class="action-steps">
+        <h4>Action Steps</h4>
+        <div class="step"><span class="num">1</span><div class="text"><strong>Ian reviews content</strong> for voice accuracy and brand alignment</div></div>
+        <div class="step"><span class="num">2</span><div class="text"><strong>Set up scheduling</strong> -- Connect X account to posting tool (Buffer, Later, or manual)</div></div>
+        <div class="step"><span class="num">3</span><div class="text"><strong>Launch Week 1</strong> -- 11 posts, Mon-Sat cadence</div></div>
+        <div class="step"><span class="num">4</span><div class="text"><strong>Track engagement</strong> -- Measure impressions, clicks, quiz signups per post</div></div>
+        <div class="step"><span class="num">5</span><div class="text"><strong>Optimize and create Week 3-4</strong> based on what performed</div></div>
+      </div>
+      <div class="assets">
+        <h4>Documents & Assets</h4>
+        <ul class="asset-list">
+          <li><a href="content-calendar-week1-2.md"><span class="file-icon">📄</span> 2-Week Content Calendar <span class="file-desc">22 posts, ready to publish</span></a></li>
+          <li><a href="../blueprint-breakthrough/marketing/x-content-engine/week-01-batch.md"><span class="file-icon">📝</span> Previous Week 1 Batch <span class="file-desc">Style reference</span></a></li>
+          <li><a href="../blueprint-breakthrough/marketing/x-content-engine/week-02-batch.md"><span class="file-icon">📝</span> Previous Week 2 Batch <span class="file-desc">Style reference</span></a></li>
+        </ul>
+      </div>
+      <div class="deps">
+        <h4>Dependencies</h4>
+        <div class="dep-item"><span class="dep-badge needs-ian">NEEDS IAN</span> Review content for voice + approve for posting</div>
+        <div class="dep-item"><span class="dep-badge needs-ian">NEEDS IAN</span> X account access for scheduling</div>
+        <div class="dep-item"><span class="dep-badge ready">READY</span> All 22 posts drafted and formatted</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- COPYWRITER -->
+  <div class="agent-section" onclick="this.classList.toggle('open')">
+    <div class="agent-header">
+      <span class="icon">✍️</span>
+      <div class="info">
+        <h3>Copywriter</h3>
+        <div class="status pending">⏳ Awaiting Assignment</div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="agent-body">
+      <div class="summary-panel">
+        <h4>Queued Tasks</h4>
+        <p>Waiting for Ian's approval on the reactivation campaign plan. Once approved:</p>
+      </div>
+      <div class="action-steps">
+        <h4>Pending Deliverables</h4>
+        <div class="step"><span class="num">1</span><div class="text"><strong>3-email reactivation sequence</strong> -- Awakening, Bridge, Catalyst (personalized by Blueprint type)</div></div>
+        <div class="step"><span class="num">2</span><div class="text"><strong>5 type-specific bonus PDFs</strong> -- Quick-start guides for each Blueprint type</div></div>
+        <div class="step"><span class="num">3</span><div class="text"><strong>Sales page copy update</strong> -- Pleasure Playbook at $47 campaign pricing</div></div>
+        <div class="step"><span class="num">4</span><div class="text"><strong>Subject line variants</strong> -- A/B test options for each email</div></div>
+      </div>
+      <div class="assets">
+        <h4>Reference Materials</h4>
+        <ul class="asset-list">
+          <li><a href="../pleasure-playbook/sales-page-v1.md"><span class="file-icon">📄</span> Current Sales Page Draft <span class="file-desc">Pleasure Playbook</span></a></li>
+          <li><a href="../blueprint-breakthrough/rosetta-stone.md"><span class="file-icon">📖</span> Rosetta Stone <span class="file-desc">Brand bible</span></a></li>
+          <li><a href="../pleasure-playbook/avatar-positioning.md"><span class="file-icon">👥</span> Avatar Positioning <span class="file-desc">3 core avatars</span></a></li>
+          <li><a href="../pleasure-playbook/email-sequence-sensual.md"><span class="file-icon">✉️</span> Existing Email Sequences <span class="file-desc">5 type-specific sequences</span></a></li>
+        </ul>
+      </div>
+      <div class="deps">
+        <h4>Blocked On</h4>
+        <div class="dep-item"><span class="dep-badge needs-ian">NEEDS IAN</span> Approve reactivation plan + offer pricing</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CUSTOMER SUCCESS -->
+  <div class="agent-section" onclick="this.classList.toggle('open')">
+    <div class="agent-header">
+      <span class="icon">💬</span>
+      <div class="info">
+        <h3>Customer Success</h3>
+        <div class="status pending">⏳ Awaiting Assignment</div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="agent-body">
+      <div class="summary-panel">
+        <h4>Queued Tasks</h4>
+        <p>Ready to activate once reactivation campaign launches. Will handle incoming buyer support and onboarding for new Pleasure Playbook customers.</p>
+      </div>
+      <div class="action-steps">
+        <h4>Pending Deliverables</h4>
+        <div class="step"><span class="num">1</span><div class="text"><strong>Onboarding email sequence</strong> for new Playbook buyers</div></div>
+        <div class="step"><span class="num">2</span><div class="text"><strong>FAQ document</strong> for common reactivation campaign questions</div></div>
+        <div class="step"><span class="num">3</span><div class="text"><strong>Escalation protocol</strong> for refund requests and sensitive issues</div></div>
+        <div class="step"><span class="num">4</span><div class="text"><strong>Testimonial collection system</strong> -- automated ask after 7 days of purchase</div></div>
+      </div>
+      <div class="deps">
+        <h4>Blocked On</h4>
+        <div class="dep-item"><span class="dep-badge needs-agent">MARKETING</span> Campaign launch to generate customers to support</div>
+        <div class="dep-item"><span class="dep-badge needs-agent">COPYWRITER</span> Onboarding sequence copy</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- AUTOMATION & TECH -->
+  <div class="agent-section" onclick="this.classList.toggle('open')">
+    <div class="agent-header">
+      <span class="icon">⚙️</span>
+      <div class="info">
+        <h3>Automation & Tech</h3>
+        <div class="status pending">⏳ Awaiting Assignment</div>
+      </div>
+      <span class="chevron">▼</span>
+    </div>
+    <div class="agent-body">
+      <div class="summary-panel">
+        <h4>Queued Tasks</h4>
+        <p>Critical path item: audit existing Ontraport automations to understand what's broken in the product ladder. The Financial Analyst flagged that upsell sequences may be disabled.</p>
+      </div>
+      <div class="action-steps">
+        <h4>Pending Deliverables</h4>
+        <div class="step"><span class="num">1</span><div class="text"><strong>Ontraport automation audit</strong> -- Map all active/inactive sequences</div></div>
+        <div class="step"><span class="num">2</span><div class="text"><strong>Campaign setup</strong> -- Build reactivation email sequence in Ontraport</div></div>
+        <div class="step"><span class="num">3</span><div class="text"><strong>Sales page deployment</strong> -- Update Pleasure Playbook page with $47 pricing + countdown</div></div>
+        <div class="step"><span class="num">4</span><div class="text"><strong>Tracking setup</strong> -- UTM parameters + conversion tracking for campaign measurement</div></div>
+      </div>
+      <div class="deps">
+        <h4>Blocked On</h4>
+        <div class="dep-item"><span class="dep-badge needs-ian">NEEDS IAN</span> Ontraport admin access for automation audit</div>
+        <div class="dep-item"><span class="dep-badge needs-agent">COPYWRITER</span> Final email copy to build into sequences</div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<div class="footer">
+  Blueprint Breakthrough Command Center v1.0 | Built by Vishnu Exu 🔱 | March 5, 2026<br>
+  Full research: info-product-business-research.md | Team structure: <a href="org-chart.html" style="color:#818cf8;">org-chart.html</a>
+</div>
+
+<script>
+// Allow clicking inside agent body without toggling
+document.querySelectorAll('.agent-body').forEach(body => {
+  body.addEventListener('click', e => e.stopPropagation());
+});
+// Links should work normally
+document.querySelectorAll('a').forEach(a => {
+  a.addEventListener('click', e => e.stopPropagation());
+});
+</script>
+
+</body>
+</html>
